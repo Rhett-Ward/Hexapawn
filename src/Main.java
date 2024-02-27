@@ -30,6 +30,8 @@ public class Main {
         Scanner scan = new Scanner(System.in);
         // this is just the variable i use to hold loops, personal preference over boolean
         int sc = 1;
+        // this is a variable that will be used to make sure one player doesn't move twice in a row Rhett Ward 02/26/2024
+        int last = 0;
         // 2D integer array that makes up the game board of hexapawn
         int[][] board = new int[3][3];
         // sets up the board on runtime
@@ -80,26 +82,61 @@ public class Main {
                         }
 
                         */
-                        System.out.println("From: ");
+                        System.out.println("From: (0,1,2)");
                         // x coordinate : 0, 1, 2
                         System.out.print("x: ");
                         int X1 = Integer.parseInt(scan.nextLine());
                         // y coordinate : 0, 1, 2 (top to bottom)
                         System.out.print("y: ");
                         int Y1 = Integer.parseInt(scan.nextLine());
-                        System.out.println("To: ");
+                        //checks to make sure you aren't moving from a position without a piece Rhett Ward 02/26/2024
+                        if(board[Y1][X1] == 0){
+                            System.out.println("Invalid location, Try Again");
+                            break;
+                        }
+                        //checks to make sure a player doesnt move twice in a row Rhett Ward 02/26/2024
+                        if(board[Y1][X1] == last){
+                            System.out.println("The same player cant move twice in a row, Try Again");
+                            break;
+                        }
+                        System.out.println("To: (0,1,2)");
                         System.out.print("x: ");
                         int X2 = Integer.parseInt(scan.nextLine());
                         System.out.print("y: ");
                         int Y2 = Integer.parseInt(scan.nextLine());
+                        // checks to make sure a piece 1 taking a piece 2 is valid Rhett Ward 02/26/2024
+                        if(board[Y2][X2] == 2 && board[Y1][X1] == 1){
+                            if (board[Y1][X1] == board[Y2 - 1][X2 - 1] || board[Y1][X1] == board[Y2 - 1][X2 + 1]){
+                                //move is valid
+                            }
+                            else {
+                                System.out.println("Invalid Move, You cannot take an enemy piece this way, Try Again");
+                                break;
+                            }
+                        }
+                        // checks to make sure a piece 2 taking a piece 1 is valid Rhett Ward 02/26/2024
+                        if(board[Y2][X2] == 1 && board[Y1][X1] == 2){
+                            if (board[Y1][X1] == board[Y2 + 1][X2 - 1] || board[Y1][X1] == board[Y2 + 1][X2 + 1]){
+                                //move is valid
+                            }
+                            else {
+                                System.out.println("Invalid Move, You cannot take an enemy piece this way, Try Again");
+                                break;
+                            }
+                        }
+                        //stops the invalid move of going sideways Rhett Ward 02/26/2024
+                        if(Y1 == Y2){
+                            System.out.println("Invalid move, You cant Move sideways");
+                            break;
+                        }
                         // this is the only control over moves in the code
-                        // there is no illegal move checking
-                        // and as of rn you can spawn 1 pieces by moving from non 2 positions
                         if(board[Y1][X1] == 2) {
                             move2(board, X2, Y2);
+                            last = 2;
                         }
                         else{
-                            move1(board,X2,Y2);
+                            move1(board, X2, Y2);
+                            last = 1;
                         }
                         replace(board,X1,Y1);
                         //this catch was for the theoretical reader code
