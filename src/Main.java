@@ -105,24 +105,52 @@ public class Main {
                         System.out.print("y: ");
                         int Y2 = Integer.parseInt(scan.nextLine());
                         // checks to make sure a piece 1 taking a piece 2 is valid Rhett Ward 02/26/2024
-                        if(board[Y2][X2] == 2 && board[Y1][X1] == 1){
-                            if (board[Y1][X1] == board[Y2 - 1][X2 - 1] || board[Y1][X1] == board[Y2 - 1][X2 + 1]){
-                                //move is valid
+                        //modified on 02/27/2024 by Rhett Ward to fix the Index out of bounds errors that were occuring during the checks
+                        if(board[Y2][X2] == 2 && board[Y1][X1] == 1) {
+                            try {
+                                if (board[Y1][X1] == board[Y2 - 1][X2 - 1]) {
+                                    move1(board, X2, Y2);
+                                    last = 1;
+                                }
+                                else {
+                                    System.out.println("Invalid Move, You cannot take an enemy piece this way, Try Again");
+                                    break;
+                                }
+                            } catch (Exception e) {
+                                continue;
                             }
-                            else {
-                                System.out.println("Invalid Move, You cannot take an enemy piece this way, Try Again");
-                                break;
-                            }
+                            try {
+                                if (board[Y1][X1] == board[Y2 - 1][X2 + 1]) {
+                                    move1(board, X2, Y2);
+                                    last = 1;
+                                } else {
+                                    System.out.println("Invalid Move, You cannot take an enemy piece this way, Try Again");
+                                    break;
+                                }
+                            } catch (Exception e){continue;}
                         }
                         // checks to make sure a piece 2 taking a piece 1 is valid Rhett Ward 02/26/2024
+                        //modified on 02/27/2024 by Rhett Ward to fix the Index out of bounds errors that were occuring during the checks
+
                         if(board[Y2][X2] == 1 && board[Y1][X1] == 2){
-                            if (board[Y1][X1] == board[Y2 + 1][X2 - 1] || board[Y1][X1] == board[Y2 + 1][X2 + 1]){
-                                //move is valid
-                            }
-                            else {
-                                System.out.println("Invalid Move, You cannot take an enemy piece this way, Try Again");
-                                break;
-                            }
+                            try {
+                                if (board[Y1][X1] == board[Y2 + 1][X2 - 1]) {
+                                    move2(board, X2, Y2);
+                                    last = 2;
+                                } else {
+                                    System.out.println("Invalid Move, You cannot take an enemy piece this way, Try Again");
+                                    break;
+                                }
+                            } catch(Exception e){continue;}
+                            try {
+                                if (board[Y1][X1] == board[Y2 + 1][X2 + 1]) {
+                                    move2(board, X2, Y2);
+                                    last = 2;
+                                } else {
+                                    System.out.println("Invalid Move, You cannot take an enemy piece this way, Try Again");
+                                    break;
+                                }
+                            }catch(Exception e){continue;}
                         }
                         //stops the invalid move of going sideways Rhett Ward 02/26/2024
                         if(Y1 == Y2){
@@ -142,6 +170,35 @@ public class Main {
                         //this catch was for the theoretical reader code
                     } catch (Exception e) {
                         System.out.println("Invalid input, use the correct format");
+                    }
+                    // the two checks to determine if a win has occured ( need to write checks for alt win condition of taking all enemy pieces) 02/27/2024 Rhett Ward
+                    if(board[0][0] == 2 || board[0][1] == 2 || board[0][2] == 2 ){
+                        System.out.println("Player 2 wins");
+                        sc = 6;
+                    }
+                    if(board[2][0] == 1 || board[2][1] == 1 || board[2][2] == 1){
+                        System.out.println("Player 1 wins");
+                        sc = 6;
+                    }
+                    int c1 = 0; // counter for checking the condition of having no pieces left 02/27/2024 Rhett Ward
+                    int c2 = 0; // same as above, checking for player 2 instead 02/27/2024 Rhett Ward
+                    for (int i = 0; i <= board.length-1; i++){ // loop going through the board and counting remaining pieces after every move 02/27/2024 Rhett Ward
+                        for(int b = 0; b <= board.length -1; b++){
+                            if(board[i][b] == 1){
+                                c1++;
+                            }
+                            if(board[i][b] == 2){
+                                c2++;
+                            }
+                        }
+                    }
+                    if(c1 == 0){ // if player 1 has no pieces left 02/27/2024 Rhett Ward
+                        System.out.println("Player 2 wins");
+                        sc = 6;
+                    }
+                    if(c2 == 0){ // if player 2 has no pieces left 02/27/2024 Rhett Ward
+                        System.out.println("Player 1 wins");
+                        sc = 6;
                     }
                     break;
                 case 2:
