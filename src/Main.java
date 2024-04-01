@@ -12,7 +12,7 @@ public class Main {
     public static int[][] Setup(){
         // moved from main to its own method for cleanliness of code on 02/29/2024 Rhett Ward
         // 2D integer array that makes up the game board of Hexapawn
-        sc = 1; //Rhett Ward 03/28/24 accommodate for change in checking process
+        // sc = 1; //Rhett Ward 03/28/24 accommodate for change in checking process
         int[][] board = new int[3][3];
         // sets up the board when called
         if (z){
@@ -98,11 +98,23 @@ public class Main {
     // method that translates inputs for moving the top pawns, Simplified 02/29/2024
     public static void move1(int[][] game,int x,int y){
         game[y][x] = 1;
+                for (int i = 0; i < 3; i++){ // loop going through the board and counting remaining pieces after every move 02/27/2024 Rhett Ward
+                    for(int b = 0; b < 3; b++) {
+                        System.out.print(game[i][b]);
+                    }
+                    System.out.println();
+            }
     }
 
     // method that translates inputs for moving the bottom pawns
     public static void move2(int[][] game,int x,int y){
         game[y][x] = 2;
+        for (int i = 0; i < 3; i++){ // loop going through the board and counting remaining pieces after every move 02/27/2024 Rhett Ward
+            for(int b = 0; b < 3; b++) {
+                System.out.print(game[i][b]);
+            }
+            System.out.println();
+        }
     }
 
     // method that replaces where the pawn moved from with an empty space
@@ -114,12 +126,8 @@ public class Main {
         //Rhett Ward 03/28/24 move all checks, into one method for ease of access
 
         //first 2 checks
+        move_check(board,X1,Y1);
 
-        //checks to make sure a player doesn't move twice in a row Rhett Ward 02/26/2024
-        if(board[Y1][X1] == last){
-            System.out.println("The same player cant move twice in a row, Try Again");
-            return false;
-        }
         //second 2 checks
 
         //checks to make sure you aren't moving more than 1 space at a time
@@ -354,16 +362,25 @@ public class Main {
                     System.out.println("How many simulations do you want to run?"); //number of games to be played
                     int n = Integer.parseInt(scan.nextLine());
                     while(n != 0){
+                        sc =  1;
+                        int[][] nboard = board;
                         int X3 = ((int) (Math.random() * 3));
                         int X4 = ((int) (Math.random() * 3));
                         int Y3 = ((int) (Math.random() * 3));
                         int Y4 = ((int) (Math.random() * 3));
-                        while(!move_check(board, X3, Y4, X4, Y3)){
+                        while(sc!=6){
+                            if (nboard[Y4][X4] == last){
+                                X4 = 0;
+                                X3 = 0;
+                                Y3 = 0;
+                                Y4 = 0;
+                            }
+                        while(!move_check(nboard, X3, Y3, X4, Y4)){
                             X3 = ((int) (Math.random() * 3));
                             X4 = ((int) (Math.random() * 3));
                             Y3 = ((int) (Math.random() * 3));
                             Y4 = ((int) (Math.random() * 3));
-                        }
+                        }}
                         n--;
                     }
                     System.out.println("Player 1 wins: " + test);
