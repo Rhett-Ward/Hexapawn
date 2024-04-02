@@ -15,7 +15,6 @@ public class Main {
         // sc = 1; //Rhett Ward 03/28/24 accommodate for change in checking process
         int[][] board = new int[3][3];
         // sets up the board when called
-        if (z){
             for(int r = 0; r < 3; r++){
                 for(int c = 0; c < 3; c++){
                     if (r == 0){
@@ -27,9 +26,7 @@ public class Main {
                     }
                 }
             }
-            System.out.println("welcome to hexapawn.");
-            z = false;
-        }
+           // System.out.println("welcome to hexapawn.");
         return board;
     } //comments inside 02/29/2024 Rhett Ward
 
@@ -125,13 +122,26 @@ public class Main {
     public static boolean move_check(int[][] board, int X1, int Y1, int X2, int Y2){
         //Rhett Ward 03/28/24 move all checks, into one method for ease of access
 
+        if(board[Y1][X1] == board[Y2][X2]){
+            System.out.println("Cannot move on your own piece");
+            return false;
+        }
+        if(Y2-1 == Y1){
+            System.out.println("You cannot move backward, Try Again");
+            return false;
+        }
+        if(X1 == X2 && Y1 == Y2){
+            System.out.println("this is not a valid move, try again.");
+            return false;
+        }
+
         //first 2 checks
         move_check(board,X1,Y1);
 
         //second 2 checks
 
         //checks to make sure you aren't moving more than 1 space at a time
-        if(Y2 == (Y1 + 2)){
+        if(Y2 == (Y1 + 2) || Y2 == (Y1 - 2)){
             System.out.println("Cant move more then 1 space at a time, Try again");
             return false;
         }
@@ -362,6 +372,7 @@ public class Main {
                     System.out.println("How many simulations do you want to run?"); //number of games to be played
                     int n = Integer.parseInt(scan.nextLine());
                     while(n != 0){
+                        board = Setup();
                         sc =  1;
                         int[][] nboard = board;
                         int X3 = ((int) (Math.random() * 3));
@@ -376,6 +387,7 @@ public class Main {
                                 Y4 = 0;
                             }
                         while(!move_check(nboard, X3, Y3, X4, Y4)){
+                            nboard = board;
                             X3 = ((int) (Math.random() * 3));
                             X4 = ((int) (Math.random() * 3));
                             Y3 = ((int) (Math.random() * 3));
