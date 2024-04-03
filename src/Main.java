@@ -1,13 +1,13 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 public class Main {
-
+    public static ArrayList<int[][]> BrdSt = new ArrayList<int[][]>();
     public static int test = 0; // don't worry about
     public static int test2 = 0;
     // this is a variable that will be used to make sure one player doesn't move twice in a row Rhett Ward 02/26/2024
     public static int last = 2; // moved to be global for convenience's sake 03/28/24
     // this is just the variable I(Rhett) use to hold loops, personal preference over boolean, made global for convenience’s sake
     public static int sc = 1;
-    static boolean z = true; //arbitrary variable used for a loop, Commented 02/29/2024 Rhett Ward
 
     public static int[][] Setup(){
         // moved from main to its own method for cleanliness of code on 02/29/2024 Rhett Ward
@@ -15,18 +15,18 @@ public class Main {
         // sc = 1; //Rhett Ward 03/28/24 accommodate for change in checking process
         int[][] board = new int[3][3];
         // sets up the board when called
-            for(int r = 0; r < 3; r++){
-                for(int c = 0; c < 3; c++){
-                    if (r == 0){
-                        board[r][c] = 1;
-                    } else if (r == 2) {
-                        board[r][c] = 2;
-                    } else{
-                        board[r][c] = 0;
-                    }
+        for(int r = 0; r < 3; r++){
+            for(int c = 0; c < 3; c++){
+                if (r == 0){
+                    board[r][c] = 1;
+                } else if (r == 2) {
+                    board[r][c] = 2;
+                } else{
+                    board[r][c] = 0;
                 }
             }
-           // System.out.println("welcome to hexapawn.");
+        }
+        // System.out.println("welcome to hexapawn.");
         return board;
     } //comments inside 02/29/2024 Rhett Ward
 
@@ -95,23 +95,11 @@ public class Main {
     // method that translates inputs for moving the top pawns, Simplified 02/29/2024
     public static void move1(int[][] game,int x,int y){
         game[y][x] = 1;
-                for (int i = 0; i < 3; i++){ // loop going through the board and counting remaining pieces after every move 02/27/2024 Rhett Ward
-                    for(int b = 0; b < 3; b++) {
-                        System.out.print(game[i][b]);
-                    }
-                    System.out.println();
-            }
     }
 
     // method that translates inputs for moving the bottom pawns
     public static void move2(int[][] game,int x,int y){
         game[y][x] = 2;
-        for (int i = 0; i < 3; i++){ // loop going through the board and counting remaining pieces after every move 02/27/2024 Rhett Ward
-            for(int b = 0; b < 3; b++) {
-                System.out.print(game[i][b]);
-            }
-            System.out.println();
-        }
     }
 
     // method that replaces where the pawn moved from with an empty space
@@ -124,26 +112,28 @@ public class Main {
 
         if(board[Y1][X1] == board[Y2][X2]){
             System.out.println("Cannot move on your own piece");
-            return false;
+            return true;
         }
-        if(Y2-1 == Y1){
+        if((board[Y1][X1] == 2 && Y2 == 2) || (board[Y1][X1] == 1 && Y2 == 0)){
             System.out.println("You cannot move backward, Try Again");
-            return false;
+            return true;
         }
         if(X1 == X2 && Y1 == Y2){
             System.out.println("this is not a valid move, try again.");
-            return false;
+            return true;
         }
 
         //first 2 checks
-        move_check(board,X1,Y1);
+        if(move_check(board, X1, Y1)){
+            return true;
+        }
 
         //second 2 checks
 
         //checks to make sure you aren't moving more than 1 space at a time
         if(Y2 == (Y1 + 2) || Y2 == (Y1 - 2)){
             System.out.println("Cant move more then 1 space at a time, Try again");
-            return false;
+            return true;
         }
 
         //sideways check
@@ -151,14 +141,14 @@ public class Main {
         //stops the invalid move of going sideways Rhett Ward 02/26/2024
         if(Y1 == Y2){
             System.out.println("Invalid move, You cant Move sideways");
-            return false;
+            return true;
         }
 
         //checks to make sure you aren't moving diagonally unless you are taking.
         if(board[Y2][X2] == 0){
             if( X2 != X1 ){
                 System.out.println("Invalid Move, Cant move diagonally unless taking an enemy piece, Try Again");
-                return false;
+                return true;
             }
         }
 
@@ -171,7 +161,7 @@ public class Main {
             }
             else {
                 System.out.println("Invalid Move, Cant move diagonally unless taking an enemy piece, Try Again");
-                return false;
+                return true;
             }
             try { //catches IOB's without the program stopping 02/29/2024 Rhett Ward
                 if (board[Y2][X2] == board[Y1 + 1][X1 - 1]) { // Checks the NW diagonal of selected piece 02/29/2024 Rhett Ward
@@ -179,7 +169,8 @@ public class Main {
                     last = 1;
                     replace(board,X1,Y1);
                     sc = Win_check(board, last);
-                    return false;
+                    if(sc == 6) {return false;}
+                    return true;
                 }
                 else if (board[Y2][X2] == board[Y1 + 1][X1 + 1]) {
                     // checks the NE diagonal of selected piece 02/29/2024 Rhett Ward
@@ -187,12 +178,13 @@ public class Main {
                     last = 1;
                     replace(board,X1,Y1);
                     sc = Win_check(board, last);
-                    return false;
+                    if(sc == 6) {return false;}
+                    return true;
                     //this gets repeated inside the catch to make sure that it still gets checked if the check before throws an IOB error 02/29/2024 Rhett Ward
                 }
-                else { // in the case that you are trying to take a 2 piece using a 1 piece (the inital condition to access these ifs) and neither of the above are true, your move is invalid as you cant take forward only diagonal 02/29/2024 Rhett Ward
+                else { // in the case that you are trying to take a 2 piece using a 1 piece (the initial condition to access these ifs) and neither of the above are true, your move is invalid as you cant take forward only diagonal 02/29/2024 Rhett Ward
                     System.out.println("Invalid Move, You cannot take an enemy piece this way, Try Again");
-                    return false;
+                    return true;
                 }
             } catch (Exception e) { // catches if the is or else if throws an IOB error (the only error that can happen here, or at least that happened in testing) 02/29/2024 Rhett Ward
                 try { //this is to run the second check in the case that the first check threw the IOB error 02/29/2024 Rhett Ward
@@ -201,12 +193,12 @@ public class Main {
                         last = 1;
                         replace(board,X1,Y1);
                         sc = Win_check(board, last);
-                        return false;
+                        if(sc == 6) {return false;}
                     }
                     else { //repeated as a measure of guaranteeing you cant take forward 02/29/2024 Rhett Ward
                         System.out.println("Invalid Move, You cannot take an enemy piece this way, Try Again");
-                        return false;
                     }
+                    return true;
                 }
                 catch (Exception y){ // empty so that program continues even if IOB's got thrown on both checks 02/29/2024 Rhett Ward
                 }
@@ -220,7 +212,7 @@ public class Main {
             }
             else {
                 System.out.println("Invalid Move, Cant move diagonally unless taking an enemy piece, Try Again");
-                return false;
+                return true;
             }
             try { // catches IOB errors 02/29/2024 Rhett Ward
                 if (board[Y2][X2] == board[Y1 - 1][X1 - 1]) { // Checks the SW diagonal of the selected piece 02/29/2024 Rhett Ward
@@ -228,19 +220,21 @@ public class Main {
                     last = 2;
                     replace(board,X1,Y1);
                     sc = Win_check(board, last);
-                    return false;
+                    if(sc == 6) {return false;}
+                    return true;
                 }
                 else if (board[Y2][X2] == board[Y1 - 1][X1 + 1]) { // checks the SE diagonal of the selected piece 02/29/2024 Rhett Ward
                     move2(board, X2, Y2);
                     last = 2;
                     replace(board,X1,Y1);
                     sc = Win_check(board, last);
-                    return false;
+                    if(sc == 6) {return false;}
+                    return true;
                     // repeated in catch for same reason as in the check for 1 taking 2 02/29/2024 Rhett Ward
                 }
                 else { // makes sure you can't take forward 02/29/2024 Rhett Ward
                     System.out.println("Invalid Move, You cannot take an enemy piece this way, Try Again");
-                    return false;
+                    return true;
                 }
             }
             catch(Exception e){
@@ -250,12 +244,13 @@ public class Main {
                         last = 2;
                         replace(board,X1,Y1);
                         sc = Win_check(board, last);
-                        return false;
+                        if(sc == 6) {return false;}
+
                     }
                     else { // repeated to guarantee that you can't take forward 02/29/2024 Rhett Ward
                         System.out.println("Invalid Move, You cannot take an enemy piece this way, Try Again");
-                        return false;
                     }
+                    return true;
                 }
                 catch(Exception y){ // empty so that program continues even if IOB's got thrown on both checks 02/29/2024 Rhett Ward
                 }
@@ -269,20 +264,14 @@ public class Main {
             last = 2;
             replace(board,X1,Y1);
             sc = Win_check(board, 2);
-            /*if(sc == 6) {
-                return false;
-            }*/
         }
         else{
             move1(board, X2, Y2);
             last = 1;
             replace(board,X1,Y1);
             sc = Win_check(board, 1);
-            /*if(sc == 6) {
-                return false;
-            }*/
         }
-        return true;
+        return false;
     }
 
     public static boolean move_check(int[][] board, int X1, int Y1){
@@ -293,15 +282,15 @@ public class Main {
         //checks to make sure you aren't moving from a position without a piece Rhett Ward 02/26/2024
         if(board[Y1][X1] == 0){
             System.out.println("Invalid location, Try Again");
-            return false;
+            return true;
         }
         //checks to make sure a player doesn't move twice in a row Rhett Ward 02/26/2024
         if(board[Y1][X1] == last){
             System.out.println("The same player cant move twice in a row, Try Again");
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     public static void main(String[] args) {
@@ -335,28 +324,28 @@ public class Main {
                     System.out.println("Where will you move?");
 
                     //Asks and takes in inputs for WHICH piece to move
-                        System.out.println("From: (0,1,2)");
-                        // x coordinate : 0, 1, 2
-                        System.out.print("x: ");
-                        int X1 = Integer.parseInt(scan.nextLine());
-                        // y coordinate : 0, 1, 2 (top to bottom)
-                        System.out.print("y: ");
-                        int Y1 = Integer.parseInt(scan.nextLine());
+                    System.out.println("From: (0,1,2)");
+                    // x coordinate : 0, 1, 2
+                    System.out.print("x: ");
+                    int X1 = Integer.parseInt(scan.nextLine());
+                    // y coordinate : 0, 1, 2 (top to bottom)
+                    System.out.print("y: ");
+                    int Y1 = Integer.parseInt(scan.nextLine());
 
-                        // first 2 checks
-                    if(!move_check(board,X1,Y1)) {
+                    // first 2 checks
+                    if(move_check(board, X1, Y1)) {
                         break;
                     }
 
                     //Asks and takes in inputs for where to move the chosen piece
-                        System.out.println("To: (0,1,2)");
-                        System.out.print("x: ");
-                        int X2 = Integer.parseInt(scan.nextLine());
-                        System.out.print("y: ");
-                        int Y2 = Integer.parseInt(scan.nextLine());
+                    System.out.println("To: (0,1,2)");
+                    System.out.print("x: ");
+                    int X2 = Integer.parseInt(scan.nextLine());
+                    System.out.print("y: ");
+                    int Y2 = Integer.parseInt(scan.nextLine());
 
-                        // second 2 checks
-                    if(!move_check(board,X1,Y1,X2,Y2)) {
+                    // second 2 checks
+                    if(move_check(board, X1, Y1, X2, Y2)) {
                         break;
                     }
 
@@ -368,35 +357,62 @@ public class Main {
                     Win_or_Lose A = new Win_or_Lose();
                     System.out.println(A.Skill_Check());
                     break;
-                case 4: //added 03/28/24
-                    System.out.println("How many simulations do you want to run?"); //number of games to be played
-                    int n = Integer.parseInt(scan.nextLine());
-                    while(n != 0){
-                        board = Setup();
-                        sc =  1;
-                        int[][] nboard = board;
+                case 4: //added 03/28/24 Fully functional 04/03/24 Rhett Ward
+                    System.out.println("How many simulations do you want to run?"); //number of games to be played 04/03/2024 Rhett Ward
+                    int n = Integer.parseInt(scan.nextLine()); //Int for ^ 04/03/2024 Rhett Ward
+                    while(n != 0){ //condition to run that many games 04/03/2024 Rhett Ward
+                        board = Setup(); // sets the board up at the beginning of each game 04/03/2024 Rhett Ward
+                        sc =  1; // loop condition 04/03/2024 Rhett Ward
+                        int[][] nboard = board; // sets a secondary board that is a direct reference to board 04/03/2024 Rhett Ward
+
+                        // randomly creates 4 input variables for making a move 04/03/2024 Rhett Ward
                         int X3 = ((int) (Math.random() * 3));
-                        int X4 = ((int) (Math.random() * 3));
                         int Y3 = ((int) (Math.random() * 3));
+                        int X4 = ((int) (Math.random() * 3));
                         int Y4 = ((int) (Math.random() * 3));
-                        while(sc!=6){
-                            if (nboard[Y4][X4] == last){
+
+
+                        while(sc!=6){ // while a game has not been won 04/03/2024 Rhett Ward
+
+                            if (nboard[Y4][X4] == last){ // prevents a certain infinite loop that occurs when a particular move was trying to be made that somehow avoided re randomization 04/03/2024 Rhett Ward
+
+                                // sets all inputs to 0 which forces a conflict which forces re - randomization 04/03/2024 Rhett Ward
                                 X4 = 0;
                                 X3 = 0;
                                 Y3 = 0;
                                 Y4 = 0;
                             }
-                        while(!move_check(nboard, X3, Y3, X4, Y4)){
-                            nboard = board;
-                            X3 = ((int) (Math.random() * 3));
-                            X4 = ((int) (Math.random() * 3));
-                            Y3 = ((int) (Math.random() * 3));
-                            Y4 = ((int) (Math.random() * 3));
-                        }}
-                        n--;
+
+                            //while move is not valid, randomize inputs until it is 04/03/2024 Rhett Ward
+                            while(move_check(nboard, X3, Y3, X4, Y4)){
+                                X3 = ((int) (Math.random() * 3));
+                                X4 = ((int) (Math.random() * 3));
+                                Y3 = ((int) (Math.random() * 3));
+                                Y4 = ((int) (Math.random() * 3));
+                            }
+                            //add board state to arraylist (irrelevant for now important for later 04/03/2024 Rhett Ward
+                            BrdSt.add(nboard);
+                        }
+                        n--; // start new instance 04/03/2024 Rhett Ward
                     }
+
+                    //print out all board states from array list 04/03/2024 Rhett Ward
+                    for(int t = 0; t < BrdSt.size() - 1; t++) {
+                        int[][] paper = BrdSt.get(t);
+                        for (int i = 0; i < 3; i++) {
+                            for (int b = 0; b < 3; b++) {
+                                System.out.print(paper[i][b]);
+                            }
+                            System.out.println();
+                        }
+                        System.out.println("---");
+                    }
+
+                    //print out number of wins from each side 04/03/2024 Rhett Ward
                     System.out.println("Player 1 wins: " + test);
                     System.out.println("Player 2 wins: " + test2);
+
+                    // reset switch but don't kill the program 04/03/2024 Rhett Ward
                     sc=1;
                     break;
             }
